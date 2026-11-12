@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StomataSeg v1 explicit frozen configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "catalog", "annotations", "prepared", "runs", "weights", "architecture_source", "source_sha256", "training_freeze", "evaluation_freeze", "training", "decoder", "preprocessing"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "catalog": {"$ref": "#/$defs/hashed_path"},
+    "annotations": {"type": "object", "additionalProperties": false, "required": ["train", "val", "test"], "properties": {"train": {"$ref": "#/$defs/hashed_path"}, "val": {"$ref": "#/$defs/hashed_path"}, "test": {"$ref": "#/$defs/hashed_path"}}},
+    "prepared": {"type": "object", "additionalProperties": false, "required": ["train", "test"], "properties": {"train": {"$ref": "#/$defs/output"}, "val": {"$ref": "#/$defs/output"}, "test": {"$ref": "#/$defs/output"}}},
+    "runs": {"type": "array", "minItems": 18, "maxItems": 18, "items": {"type": "object", "additionalProperties": false, "required": ["id", "initialization", "budget", "seed", "image_ids", "output_dir", "prediction_dir"], "properties": {"id": {"type": "string", "minLength": 1}, "initialization": {"enum": ["random", "supervised_imagenet", "dino_self_supervised"]}, "budget": {"enum": [4, 16]}, "seed": {"enum": [20261026, 20261027, 20261028]}, "image_ids": {"type": "array", "uniqueItems": true, "items": {"type": ["integer", "string"]}}, "output_dir": {"type": "string", "minLength": 1}, "prediction_dir": {"type": "string", "minLength": 1}}}},
+    "weights": {"type": "object", "additionalProperties": false, "required": ["supervised_imagenet", "dino_self_supervised"], "properties": {"supervised_imagenet": {"$ref": "#/$defs/hashed_path"}, "dino_self_supervised": {"$ref": "#/$defs/hashed_path"}}},
+    "architecture_source": {"$ref": "#/$defs/hashed_path"},
+    "source_sha256": {"type": "object", "minProperties": 6, "additionalProperties": {"$ref": "#/$defs/sha256"}},
+    "training_freeze": {"$ref": "#/$defs/path"},
+    "evaluation_freeze": {"$ref": "#/$defs/path"},
+    "training": {"const": {"steps": 300, "batch_size": 4, "crop_size": 384, "foreground_crop_probability": 0.75, "encoder_lr": 0.0001, "decoder_lr": 0.001, "weight_decay": 0.0001, "cpu_threads": 4, "amp": true, "horizontal_flip": true, "vertical_flip": true, "loss_dtype": "float32", "amp_init_scale": 4096.0, "max_amp_overflow_skips": 20, "step_definition": "effective_optimizer_updates"}},
+    "decoder": {"const": {"foreground_threshold": 0.5, "center_threshold": 0.2, "nms_size": 9, "boundary_weight": 3.0, "min_instance_area": 16}},
+    "preprocessing": {"const": {"category_id": 3173368342, "long_side": 0, "supervision_halo": 3, "rasterization": "skimage_polygon_pixel_centers", "overlap": "same_category_conflict_ignore", "train_supervision": "annotated_foreground_and_inferred_local_negative_halo", "halo_interpretation": "local_negative_assumption_not_human_confirmed_background", "evaluation_supervision": "all_pixels_except_overlap_or_explicit_invalid", "unsupported_reference_policy": "train_strict_test_preserve_unscorable_annotation_records", "unscorable_interpretation": "current_pixel_reference_support_not_human_annotation_error"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {"type": "object", "additionalProperties": false, "required": ["path"], "properties": {"path": {"type": "string", "minLength": 1}}},
+    "hashed_path": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}}},
+    "output": {"type": "object", "additionalProperties": false, "required": ["output_dir"], "properties": {"output_dir": {"type": "string", "minLength": 1}}}
+  }
+}

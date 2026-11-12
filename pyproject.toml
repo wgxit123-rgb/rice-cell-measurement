@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ricecells"
+version = "0.1.0"
+description = "Reproducible baseline for rice mesophyll microscopy segmentation"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "opencv-python-headless>=4.8",
+  "Pillow>=9.5",
+  "PyYAML>=6.0",
+  "scipy>=1.10",
+  "scikit-image>=0.21",
+  "torch>=2.4",
+  "torchvision>=0.19",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
